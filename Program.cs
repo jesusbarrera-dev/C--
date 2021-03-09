@@ -10,11 +10,15 @@ namespace C__
             Regex intNumber = new Regex(@"\d");
             Regex az = new Regex(@"\w[a-zA-Z]");
             bool isInvalidToken = true;
-
+            Console.Write("Para terminar el programa ingrese la cadena [ terminar ]\n");
+           
             while (true)
             {
-                Console.Write("> ");
+                Console.Write("Ingrese la cadena a evaluar > ");
                 var line = Console.ReadLine();
+                if(line == "terminar"){
+                    break;
+                }
 
                 var regexNumber = intNumber.Match(line);
                 var regexWord = az.Match(line);
@@ -66,6 +70,60 @@ namespace C__
                         break;
                     case "else":
                         Console.WriteLine("Palabra reservada - Condicional - " + line);
+                        break;
+                    case "&&": //----------------------------------------------------------
+                        Console.WriteLine("Operador lógico - conjunción lógica - " + line);
+                        break;
+                    case ";":
+                        Console.WriteLine("Punto y coma - fin de instrucción - " + line);
+                        break;
+                    case "<":
+                        Console.WriteLine("Operador relacional - menor que - " + line);
+                        break;
+                    case ">":
+                        Console.WriteLine("Operador relacional - mayor que - " + line);
+                        break;
+                    case ",":
+                        Console.WriteLine("Signo de puntuación - coma - " + line);
+                        break;
+                    case "()":
+                        Console.WriteLine("Parentesis - " + line);
+                        break;
+                    case "{}":
+                        Console.WriteLine("Llaves - " + line);
+                        break;
+                    case "[]":
+                        Console.WriteLine("Corchetes - " + line);
+                        break;
+                    case "return":
+                        Console.WriteLine("Palabra reservada - " + line); 
+                        break;
+                    case "==":
+                        Console.WriteLine("Operador relacional - igual a - " + line);
+                        break;
+                    case "void":
+                        Console.WriteLine("Palabra reservada - " + line); 
+                        break;
+                    case "+":
+                        Console.WriteLine("Operador aritmetico - suma - " + line);
+                        break;
+                    case "-":
+                        Console.WriteLine("Operador aritmetico - resta - " + line);
+                        break;
+                    case "*":
+                        Console.WriteLine("Operador aritmetico - multiplicación - " + line);
+                        break;
+                    case "/":
+                        Console.WriteLine("Operador aritmetico - división - " + line);
+                        break;
+                    case "=":
+                        Console.WriteLine("Operador de asignación - " + line); 
+                        break;
+                    case "++":
+                        Console.WriteLine("Operador aritmetico - incremento - " + line);
+                        break;
+                    case "--":
+                        Console.WriteLine("Operador aritmetico - decremento - " + line);
                         break;
                     default:
                         if (isInvalidToken)
