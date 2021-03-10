@@ -23,17 +23,7 @@ namespace C__
                 var regexNumber = intNumber.Match(line);
                 var regexWord = az.Match(line);
 
-                if (regexNumber.Success)
-                {
-                    Console.WriteLine("Número");
-                    isInvalidToken = false;
-                }
-
-                if (regexWord.Success)
-                {
-                    Console.WriteLine("Cadena de caracteres");
-                    isInvalidToken = false;
-                }
+                
 
                 //var lexer = new Lexer(line);
                 switch (line)
@@ -50,8 +40,14 @@ namespace C__
                     case "string":
                         Console.WriteLine("Palabra reservada - Tipo de dato " + line);
                         break;
+                    case "||":
+                        Console.WriteLine("Operador lógico - disyunción lógica - " + line);
+                        break;
                     case "bool":
                         Console.WriteLine("Palabra reservada - Tipo de dato " + line);
+                        break;
+                    case ".":
+                        Console.WriteLine("Punto - " + line);
                         break;
                     case "true":
                         Console.WriteLine("Palabra reservada - Booleano - " + line);
@@ -126,13 +122,25 @@ namespace C__
                         Console.WriteLine("Operador aritmetico - decremento - " + line);
                         break;
                     default:
+                    {
+                        if (regexNumber.Success)
+                        {
+                            Console.WriteLine("Número");
+                            isInvalidToken = false;
+                        }
+
+                        if (regexWord.Success)
+                        {
+                            Console.WriteLine("Cadena de caracteres");
+                            isInvalidToken = false;
+                        }
                         if (isInvalidToken)
                         {
                             Console.WriteLine("ERROR: Token inválido - " + line);
                             isInvalidToken = false;
                         }
-                        
                         break;
+                    }
                 }
             }
 
