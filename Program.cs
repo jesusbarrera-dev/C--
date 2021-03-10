@@ -7,122 +7,126 @@ namespace C__
     {
         static void Main(string[] args)
         {
-            Regex intNumber = new Regex(@"\d");
-            Regex az = new Regex(@"\w[a-zA-Z]");
-            bool isInvalidToken;
             Console.Write("Para terminar el programa ingrese la cadena [ terminar ]\n");
-           
+            bool isInvalidToken;
             while (true)
             {
-                isInvalidToken = true;
                 Console.Write("Ingrese la cadena a evaluar > ");
                 var line = Console.ReadLine();
                 if(line == "terminar"){
                     break;
                 }
-
-                var regexNumber = intNumber.Match(line);
-                var regexWord = az.Match(line);
-
-                
-
+                isInvalidToken = true;
                 //var lexer = new Lexer(line);
-                switch (line)
-                {
-                    case " ":
-                        Console.WriteLine("Cadena vacía");
-                        break;
-                    case "int":
-                        Console.WriteLine("Palabra reservada - Tipo de dato " + line);
-                        break;
-                    case "float":
-                        Console.WriteLine("Palabra reservada - Tipo de dato " + line);
-                        break;
-                    case "string":
-                        Console.WriteLine("Palabra reservada - Tipo de dato " + line);
-                        break;
-                    case "||":
-                        Console.WriteLine("Operador lógico - disyunción lógica - " + line);
-                        break;
-                    case "bool":
-                        Console.WriteLine("Palabra reservada - Tipo de dato " + line);
-                        break;
-                    case ".":
-                        Console.WriteLine("Punto - " + line);
-                        break;
-                    case "true":
-                        Console.WriteLine("Palabra reservada - Booleano - " + line);
-                        break;
-                    case "false":
-                        Console.WriteLine("Palabra reservada - Booleano - " + line);
-                        break;
-                    case "for":
-                        Console.WriteLine("Palabra reservada - Ciclo - " + line);
-                        break;
-                    case "while":
-                        Console.WriteLine("Palabra reservada - Ciclo - " + line);
-                        break;
-                    case "if":
-                        Console.WriteLine("Palabra reservada - Condicional - " + line);
-                        break;
-                    case "else":
-                        Console.WriteLine("Palabra reservada - Condicional - " + line);
-                        break;
-                    case "&&": //----------------------------------------------------------
-                        Console.WriteLine("Operador lógico - conjunción lógica - " + line);
-                        break;
-                    case ";":
-                        Console.WriteLine("Punto y coma - fin de instrucción - " + line);
-                        break;
-                    case "<":
-                        Console.WriteLine("Operador relacional - menor que - " + line);
-                        break;
-                    case ">":
-                        Console.WriteLine("Operador relacional - mayor que - " + line);
-                        break;
-                    case ",":
-                        Console.WriteLine("Signo de puntuación - coma - " + line);
-                        break;
-                    case "()":
-                        Console.WriteLine("Parentesis - " + line);
-                        break;
-                    case "{}":
-                        Console.WriteLine("Llaves - " + line);
-                        break;
-                    case "[]":
-                        Console.WriteLine("Corchetes - " + line);
-                        break;
-                    case "return":
-                        Console.WriteLine("Palabra reservada - " + line); 
-                        break;
-                    case "==":
-                        Console.WriteLine("Operador relacional - igual a - " + line);
-                        break;
-                    case "void":
-                        Console.WriteLine("Palabra reservada - " + line); 
-                        break;
-                    case "+":
-                        Console.WriteLine("Operador aritmetico - suma - " + line);
-                        break;
-                    case "-":
-                        Console.WriteLine("Operador aritmetico - resta - " + line);
-                        break;
-                    case "*":
-                        Console.WriteLine("Operador aritmetico - multiplicación - " + line);
-                        break;
-                    case "/":
-                        Console.WriteLine("Operador aritmetico - división - " + line);
-                        break;
-                    case "=":
-                        Console.WriteLine("Operador de asignación - " + line); 
-                        break;
-                    case "++":
-                        Console.WriteLine("Operador aritmetico - incremento - " + line);
-                        break;
-                    case "--":
-                        Console.WriteLine("Operador aritmetico - decremento - " + line);
-                        break;
-                    default:
+                var lexer = new Program();
+                lexer.AnalyzeToken(line, isInvalidToken);
+            }
+
+        }
+
+        private void AnalyzeToken(string line, bool isInvalidToken)
+        {
+            Regex intNumber = new Regex(@"\d");
+            Regex az = new Regex(@"\w[a-zA-Z]");
+            var regexNumber = intNumber.Match(line);
+            var regexWord = az.Match(line);
+
+            switch (line)
+            {
+                case " ":
+                    Console.WriteLine("Cadena vacía");
+                    break;
+                case "int":
+                    Console.WriteLine("Palabra reservada - Tipo de dato " + line);
+                    break;
+                case "float":
+                    Console.WriteLine("Palabra reservada - Tipo de dato " + line);
+                    break;
+                case "string":
+                    Console.WriteLine("Palabra reservada - Tipo de dato " + line);
+                    break;
+                case "||":
+                    Console.WriteLine("Operador lógico - disyunción lógica - " + line);
+                    break;
+                case "bool":
+                    Console.WriteLine("Palabra reservada - Tipo de dato " + line);
+                    break;
+                case ".":
+                    Console.WriteLine("Punto - " + line);
+                    break;
+                case "true":
+                    Console.WriteLine("Palabra reservada - Booleano - " + line);
+                    break;
+                case "false":
+                    Console.WriteLine("Palabra reservada - Booleano - " + line);
+                    break;
+                case "for":
+                    Console.WriteLine("Palabra reservada - Ciclo - " + line);
+                    break;
+                case "while":
+                    Console.WriteLine("Palabra reservada - Ciclo - " + line);
+                    break;
+                case "if":
+                    Console.WriteLine("Palabra reservada - Condicional - " + line);
+                    break;
+                case "else":
+                    Console.WriteLine("Palabra reservada - Condicional - " + line);
+                    break;
+                case "&&": //----------------------------------------------------------
+                    Console.WriteLine("Operador lógico - conjunción lógica - " + line);
+                    break;
+                case ";":
+                    Console.WriteLine("Punto y coma - fin de instrucción - " + line);
+                    break;
+                case "<":
+                    Console.WriteLine("Operador relacional - menor que - " + line);
+                    break;
+                case ">":
+                    Console.WriteLine("Operador relacional - mayor que - " + line);
+                    break;
+                case ",":
+                    Console.WriteLine("Signo de puntuación - coma - " + line);
+                    break;
+                case "()":
+                    Console.WriteLine("Parentesis - " + line);
+                    break;
+                case "{}":
+                    Console.WriteLine("Llaves - " + line);
+                    break;
+                case "[]":
+                    Console.WriteLine("Corchetes - " + line);
+                    break;
+                case "return":
+                    Console.WriteLine("Palabra reservada - " + line);
+                    break;
+                case "==":
+                    Console.WriteLine("Operador relacional - igual a - " + line);
+                    break;
+                case "void":
+                    Console.WriteLine("Palabra reservada - " + line);
+                    break;
+                case "+":
+                    Console.WriteLine("Operador aritmetico - suma - " + line);
+                    break;
+                case "-":
+                    Console.WriteLine("Operador aritmetico - resta - " + line);
+                    break;
+                case "*":
+                    Console.WriteLine("Operador aritmetico - multiplicación - " + line);
+                    break;
+                case "/":
+                    Console.WriteLine("Operador aritmetico - división - " + line);
+                    break;
+                case "=":
+                    Console.WriteLine("Operador de asignación - " + line);
+                    break;
+                case "++":
+                    Console.WriteLine("Operador aritmetico - incremento - " + line);
+                    break;
+                case "--":
+                    Console.WriteLine("Operador aritmetico - decremento - " + line);
+                    break;
+                default:
                     {
                         if (regexNumber.Success)
                         {
@@ -142,9 +146,7 @@ namespace C__
                         }
                         break;
                     }
-                }
             }
-
         }
     }
 
