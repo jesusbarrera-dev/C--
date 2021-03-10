@@ -9,11 +9,12 @@ namespace C__
         {
             Regex intNumber = new Regex(@"\d");
             Regex az = new Regex(@"\w[a-zA-Z]");
-            bool isInvalidToken = true;
+            bool isInvalidToken;
             Console.Write("Para terminar el programa ingrese la cadena [ terminar ]\n");
            
             while (true)
             {
+                isInvalidToken = true;
                 Console.Write("Ingrese la cadena a evaluar > ");
                 var line = Console.ReadLine();
                 if(line == "terminar"){
