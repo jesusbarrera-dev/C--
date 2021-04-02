@@ -156,6 +156,8 @@ namespace C__
         WhiteSpaceToken,
         PlusToken,
         MinusToken,
+        StarToken,
+        SlashToken,
         TimesToken,
         DivisionToken,
         OpenParenthesisToken,
@@ -168,7 +170,10 @@ namespace C__
         LoopToken,
         ConditionalToken,
         BadToken,
-        EOFToken
+        EOFToken,
+        NumberExpression,
+        BinaryExpression,
+        ParenthesizedExpression
     };
 
     class SyntaxToken : SyntaxNode
@@ -286,6 +291,27 @@ namespace C__
             }
             _diagnostics.Add($"ERROR: entrada de caracter inválido: '{Current}'");
             return new SyntaxToken(SyntaxKind.BadToken, _position++, _text.Substring(_position - 1, 1), null);
+        }
+    }
+
+    abstract class SyntaxNode{
+        public abstract SyntaxKind Kind{ get;}
+
+        public abstract IEnumerable<SyntaxNode> GetChildren();
+
+    }
+
+    sealed class NumberExpressionSyntax : ExpressionSyntax{
+        public NumberExpressionSyntax(SyntaxToken numberToken)
+        {
+            NumberToken = numberToken;
+        }
+        public override SyntaxKind Kind => SyntaxKind.NumberExpression;
+        public SyntaxToken NumberToken{ get;}
+
+        public override IEnumerable<SyntaxNode> GetChildren()
+        {
+            yield return NumberToken;
         }
     }
 
