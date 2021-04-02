@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace C__
 {
@@ -8,146 +9,68 @@ namespace C__
     {
         static void Main(string[] args)
         {
-            Console.Write("Para terminar el programa ingrese la cadena [ terminar ]\n");
-            bool isInvalidToken;
+
+            bool showTree = false;
+
             while (true)
             {
-                Console.Write("Ingrese la cadena a evaluar > ");
+                Console.Write(">");
                 var line = Console.ReadLine();
-                if(line == "terminar"){
-                    break;
-                }
-                isInvalidToken = true;
-                //var lexer = new Lexer(line);
-                var lexer = new Program();
-                lexer.AnalyzeToken(line, isInvalidToken);
-            }
+                if (string.IsNullOrEmpty(line)) return;
 
+                if (line == "#showTree")
+                {
+                    showTree = !showTree;
+                    Console.WriteLine(showTree ? "Showing parse trees." : "Not showing parse trees");
+                    continue;
+                }
+                if (line == "#cls")
+                {
+                    Console.Clear();
+                    continue;
+                }
+                var syntaxTree = SyntaxTree.Parse(line);
+                if (showTree)
+                {
+                    var color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    PrettyPrint(syntaxTree.Root);
+                    Console.ForegroundColor = color;
+                }
+                if (!syntaxTree.Diagnostics.Any())
+                {
+                    var e = new Evaluator(syntaxTree.Root);
+                    var result = e.Evaluate();
+                    Console.WriteLine(result);
+                }
+                else
+                {
+                    var color = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    foreach (var diagnostic in syntaxTree.Diagnostics)
+                        Console.WriteLine(diagnostic);
+                    Console.ForegroundColor = color;
+                }
+            }
         }
 
-        private void AnalyzeToken(string line, bool isInvalidToken)
+        static void PrettyPrint(SyntaxNode node, string indent = "", bool isLast = true)
         {
-            Regex intNumber = new Regex(@"\d");
-            Regex az = new Regex(@"\w[a-zA-Z]");
-            var regexNumber = intNumber.Match(line);
-            var regexWord = az.Match(line);
-
-            switch (line)
+            var marker = isLast ? "└──" : "├──";
+            Console.Write(indent);
+            Console.Write(marker);
+            Console.Write(node.Kind);
+            if (node is SyntaxToken t && t.Value != null)
             {
-                case " ":
-                    Console.WriteLine("Cadena vacía");
-                    break;
-                case "int":
-                    Console.WriteLine("Palabra reservada - Tipo de dato " + line);
-                    break;
-                case "float":
-                    Console.WriteLine("Palabra reservada - Tipo de dato " + line);
-                    break;
-                case "string":
-                    Console.WriteLine("Palabra reservada - Tipo de dato " + line);
-                    break;
-                case "||":
-                    Console.WriteLine("Operador lógico - disyunción lógica - " + line);
-                    break;
-                case "bool":
-                    Console.WriteLine("Palabra reservada - Tipo de dato " + line);
-                    break;
-                case ".":
-                    Console.WriteLine("Punto - " + line);
-                    break;
-                case "true":
-                    Console.WriteLine("Palabra reservada - Booleano - " + line);
-                    break;
-                case "false":
-                    Console.WriteLine("Palabra reservada - Booleano - " + line);
-                    break;
-                case "for":
-                    Console.WriteLine("Palabra reservada - Ciclo - " + line);
-                    break;
-                case "while":
-                    Console.WriteLine("Palabra reservada - Ciclo - " + line);
-                    break;
-                case "if":
-                    Console.WriteLine("Palabra reservada - Condicional - " + line);
-                    break;
-                case "else":
-                    Console.WriteLine("Palabra reservada - Condicional - " + line);
-                    break;
-                case "&&": //----------------------------------------------------------
-                    Console.WriteLine("Operador lógico - conjunción lógica - " + line);
-                    break;
-                case ";":
-                    Console.WriteLine("Punto y coma - fin de instrucción - " + line);
-                    break;
-                case "<":
-                    Console.WriteLine("Operador relacional - menor que - " + line);
-                    break;
-                case ">":
-                    Console.WriteLine("Operador relacional - mayor que - " + line);
-                    break;
-                case ",":
-                    Console.WriteLine("Signo de puntuación - coma - " + line);
-                    break;
-                case "()":
-                    Console.WriteLine("Parentesis - " + line);
-                    break;
-                case "{}":
-                    Console.WriteLine("Llaves - " + line);
-                    break;
-                case "[]":
-                    Console.WriteLine("Corchetes - " + line);
-                    break;
-                case "return":
-                    Console.WriteLine("Palabra reservada - " + line);
-                    break;
-                case "==":
-                    Console.WriteLine("Operador relacional - igual a - " + line);
-                    break;
-                case "void":
-                    Console.WriteLine("Palabra reservada - " + line);
-                    break;
-                case "+":
-                    Console.WriteLine("Operador aritmetico - suma - " + line);
-                    break;
-                case "-":
-                    Console.WriteLine("Operador aritmetico - resta - " + line);
-                    break;
-                case "*":
-                    Console.WriteLine("Operador aritmetico - multiplicación - " + line);
-                    break;
-                case "/":
-                    Console.WriteLine("Operador aritmetico - división - " + line);
-                    break;
-                case "=":
-                    Console.WriteLine("Operador de asignación - " + line);
-                    break;
-                case "++":
-                    Console.WriteLine("Operador aritmetico - incremento - " + line);
-                    break;
-                case "--":
-                    Console.WriteLine("Operador aritmetico - decremento - " + line);
-                    break;
-                default:
-                    {
-                        if (regexNumber.Success)
-                        {
-                            Console.WriteLine("Número");
-                            isInvalidToken = false;
-                        }
-
-                        if (regexWord.Success)
-                        {
-                            Console.WriteLine("Cadena de caracteres");
-                            isInvalidToken = false;
-                        }
-                        if (isInvalidToken)
-                        {
-                            Console.WriteLine("ERROR: Token inválido - " + line);
-                            isInvalidToken = false;
-                        }
-                        break;
-                    }
+                Console.Write(" ");
+                Console.Write(t.Value);
             }
+            Console.WriteLine();
+
+            indent += isLast ? "    " : "│   ";
+            var lastChild = node.GetChildren().LastOrDefault();
+            foreach (var child in node.GetChildren())
+                PrettyPrint(child, indent, child == lastChild);
         }
     }
 
@@ -162,6 +85,7 @@ namespace C__
         DivisionToken,
         OpenParenthesisToken,
         CloseParenthesisToken,
+        EndOfFileToken,
         FloatToken,
         StringToken,
         OrToken,
@@ -183,6 +107,7 @@ namespace C__
             Kind = kind;
             Position = position;
             Text = text;
+            Value = value;
         }
 
         public override SyntaxKind Kind { get; }
@@ -301,6 +226,10 @@ namespace C__
 
     }
 
+    abstract class ExpressionSyntax : SyntaxNode
+    {
+    }
+
     sealed class NumberExpressionSyntax : ExpressionSyntax{
         public NumberExpressionSyntax(SyntaxToken numberToken)
         {
@@ -312,6 +241,72 @@ namespace C__
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return NumberToken;
+        }
+    }
+
+    sealed class BinaryExpressionSyntax : ExpressionSyntax
+    {
+        public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
+        {
+            Left = left;
+            OperatorToken = operatorToken;
+            Right = right;
+        }
+
+        public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
+        public ExpressionSyntax Left { get; }
+        public SyntaxToken OperatorToken { get; }
+        public ExpressionSyntax Right { get; }
+
+        public override IEnumerable<SyntaxNode> GetChildren()
+        {
+            yield return Left;
+            yield return OperatorToken;
+            yield return Right;
+        }
+    }
+
+    sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
+    {
+        public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken)
+        {
+            OpenParenthesisToken = openParenthesisToken;
+            Expression = expression;
+            CloseParenthesisToken = closeParenthesisToken;
+        }
+
+        public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
+        public SyntaxToken OpenParenthesisToken { get; }
+        public ExpressionSyntax Expression { get; }
+        public SyntaxToken CloseParenthesisToken { get; }
+
+        public override IEnumerable<SyntaxNode> GetChildren()
+        {
+            yield return OpenParenthesisToken;
+            yield return Expression;
+            yield return CloseParenthesisToken;
+        }
+
+    }
+
+    sealed class SyntaxTree
+    {
+        public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken)
+        {
+            Diagnostics = diagnostics.ToArray();
+            Root = root;
+            EndOfFileToken = endOfFileToken;
+
+        }
+
+        public IReadOnlyList<string> Diagnostics { get; }
+        public ExpressionSyntax Root { get; }
+        public SyntaxToken EndOfFileToken { get; }
+
+        public static SyntaxTree Parse(string text)
+        {
+            var parser = new Parser(text);
+            return parser.Parse();
         }
     }
 
@@ -336,7 +331,7 @@ namespace C__
                 {
                     tokens.Add(token);
                 }
-            } while (token.Kind != SyntaxKind.EOFToken);
+            } while (token.Kind != SyntaxKind.EndOfFileToken);
 
             _tokens = tokens.ToArray();
             _diagnostics.AddRange(lexer.Diagnostics);
@@ -408,7 +403,7 @@ namespace C__
             {
                 var operatorToken = NextToken();
                 var right = ParsePrimaryExpression();
-                left = new BinaryExpressionSyntax(left, operatorToken, right)
+                left = new BinaryExpressionSyntax(left, operatorToken, right);
             }
 
             return left;
@@ -429,72 +424,6 @@ namespace C__
 
     }
 
-    sealed class BinaryExpressionSyntax : ExpressionSyntax
-    {
-        public BinaryExpressionSyntax(ExpressionSyntax left, SyntaxToken operatorToken, ExpressionSyntax right)
-        {
-            Left = left;
-            OperatorToken = operatorToken;
-            Right = right;
-        }
-
-        public override SyntaxKind Kind => SyntaxKind.BinaryExpression;
-        public ExpressionSyntax Left { get; }
-        public SyntaxToken OperatorToken { get; }
-        public ExpressionSyntax Right { get; }
-
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            yield return Left;
-            yield return OperatorToken;
-            yield return Right;
-        }
-    }
-
-    abstract class ExpressionSyntax : SyntaxNode
-    {
-    }
-
-    sealed class SyntaxTree
-    {
-        public SyntaxTree(IEnumerable<string> diagnostics, ExpressionSyntax root, SyntaxToken endOfFileToken){
-            Diagnostics = diagnostics.ToArray();
-            Root = root;
-            EndOfFileToken = endOfFileToken;
-            
-        }
-        
-        public IReadOnlyList<string> Diagnostics { get; }
-        public ExpressionSyntax Root { get; }
-        public SyntaxToken EndOfFileToken { get; }
-        
-        public static SyntaxTree Parse(string text){
-            var parser = new Parser(text);
-            return parser.Parse();
-        }
-    }
-
-    sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
-    {
-        public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closeParenthesisToken){
-            OpenParenthesisToken = openParenthesisToken;
-            Expression = expression;
-            CloseParenthesisToken = closeParenthesisToken;
-        }
-        
-        public override SyntaxKind Kind => SyntaxKind.ParenthesizedExpression;
-        public SyntaxToken OpenParenthesisToken { get; }
-        public ExpressionSyntax Expression { get; }
-        public SyntaxToken CloseParenthesisToken { get; }
-
-        public override IEnumerable<SyntaxNode> GetChildren(){
-            yield return OpenParenthesisToken;
-            yield return Expression;
-            yield return CloseParenthesisToken;            
-        }
-
-    }
-
     class Evaluator
     {
         private readonly ExpressionSyntax _root;
@@ -506,10 +435,11 @@ namespace C__
         {
             return EvaluateExpression(_root);
         }
-        public int EvaluateExpression(BinaryExpressionSyntax node)
+
+        public int EvaluateExpression(ExpressionSyntax node)
         {
             if (node is NumberExpressionSyntax n)
-                return (int)n.NumberToken.Value;
+                return (int) n.NumberToken.Value;
 
             if (node is BinaryExpressionSyntax b)
             {
